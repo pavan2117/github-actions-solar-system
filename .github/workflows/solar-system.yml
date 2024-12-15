@@ -118,6 +118,5 @@ jobs:
 
         - name: checking kubectl version
           run: |
-            echo "Using KUBECONFIG: $kubeconfig"
             kubectl config view
-            kubectl version -o yaml
+            kubectl config current-context
