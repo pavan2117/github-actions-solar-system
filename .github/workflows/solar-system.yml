@@ -114,7 +114,10 @@ jobs:
           uses: azure/k8s-set-context@v3    
           with:
             method: kubeconfig
-            kubeconfig: '${{ secrets.KUBECONFIG}}'
+            kubeconfig: '${{ secrets.KUBECONFIG }}'
 
         - name: checking kubectl version
-          run: kubectl version -o yaml
+          run: |
+            echo "Using KUBECONFIG: $kubeconfig"
+            kubectl config view
+            kubectl version -o yaml
