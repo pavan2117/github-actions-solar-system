@@ -115,7 +115,30 @@ jobs:
           with:
             method: kubeconfig
             kubeconfig: '${{ secrets.KUBECONFIG }}'
+
         - name: checking kubectl version
           run: |
             kubectl version --short -o yaml
             kubectl get nodes 
+        
+        - name: Assigning ING-IP to GIT_ENV
+          id: ingress-ip
+          run: |
+            echo "INGRESS_IP=$(kubectl -n ingress-nginx get services ingress-nginx-controller -o jsonpath='{.status.loadBalancer.ingress[0].ip}')" >> "$GITHUB_ENV"
+            echo "Ingress ip is= $INGRESS_IP"
+
+        - name: replacing placeholder
+          uses: cschleiden/replace-tokens@v1
+          with:
+            tokenPrefix: '_{_'
+            tokenSuffix: '_}_'
+            files: '["~/kubernetes/development/*.yaml"]'
+          env:
+            CDN: https://somecdn.com/...
+            NAMESPACE: ${{vars.NAMESPACE}}
+            REPLICAS: ${{vars.REPLICAS}}
+            IMAGE: ghcr.io/${{github.repository_owner}}/solar-system:${{github.sha}}
+            INGRESS_IP: ${{github.env.INGRESS_IP}}
+
+        - name: checking file
+          run: cat ~/kubernetes/development/*.yaml
