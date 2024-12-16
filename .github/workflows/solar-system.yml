@@ -115,7 +115,6 @@ jobs:
           with:
             method: kubeconfig
             kubeconfig: '${{ secrets.KUBECONFIG }}'
-
         - name: checking kubectl version
           run: |
             kubectl config view
